@@ -15,6 +15,6 @@ spec:
       containers:
       - name: client
         image: kofimorrison/angular-recipe
-        # imagePullPolicy: Always
+        imagePullPolicy: Always
         ports:
           - containerPort: 3000
