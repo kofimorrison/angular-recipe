@@ -8,7 +8,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: multi-cluster
+  GKE_CLUSTER: gke
   GKE_ZONE: europe-west3-b
   SHA: ${ GITHUB_SHA:10 }
 
