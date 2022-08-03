@@ -1,0 +1,62 @@
+name: Deploy Recipe app to GKE
+
+on:
+  workflow_run:
+    workflows: [unit tests]
+    branches: [master]
+    types: [completed]
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: multi-cluster
+  GKE_ZONE: europe-west3-b
+  SHA: ${ GITHUB_SHA:10 }
+
+jobs:
+  publish-to-hub:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Publish to dockerhub
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Get the version
+      id: vars
+      run: echo ::set-output name=tag::$(echo ${GITHUB_SHA:10})
+    - name: Running deploy script
+      run: |-
+        docker build -t kofimorrison/angular-recipe:latest -t kofimorrison/angular-recipe:${{steps.vars.outputs.tag}} -f ./Dockerfile ./src
+        docker push kofimorrison/angular-recipe:latest
+        docker push kofimorrison/angular-recipe:${{steps.vars.outputs.tag}}
+  setup-and-deploy:
+    needs: publish-to-hub
+    name: Setup and Deploy to k8s
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Setup gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0
+      with:
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
+
+    # Get the GKE credentials so we can deploy to the cluster
+    - run: |-
+        gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+    # Deploy sample image to the GKE cluster
+    - name: Get the version
+      id: vars
+      run: echo ::set-output name=tag::$(echo ${GITHUB_SHA:10})
+    - name: Deploy
+      run: |-
+        kubectl apply -f k8s/
+        kubectl set image deployments/client-deployment client=kofimorrison/angular-recipe:${{steps.vars.outputs.tag}}
+        kubectl get services -o wide
