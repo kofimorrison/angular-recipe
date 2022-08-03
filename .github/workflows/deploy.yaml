@@ -30,7 +30,7 @@ jobs:
       run: echo ::set-output name=tag::$(echo ${GITHUB_SHA:10})
     - name: Running deploy script
       run: |-
-        docker build -t kofimorrison/angular-recipe:latest -t kofimorrison/angular-recipe:${{steps.vars.outputs.tag}} -f ./Dockerfile ./src
+        docker build -t kofimorrison/angular-recipe:latest -t kofimorrison/angular-recipe:${{steps.vars.outputs.tag}} -f ./Dockerfile ./
         docker push kofimorrison/angular-recipe:latest
         docker push kofimorrison/angular-recipe:${{steps.vars.outputs.tag}}
   setup-and-deploy:
