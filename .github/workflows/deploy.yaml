@@ -3,7 +3,7 @@ name: Deploy Recipe app to GKE
 on:
   workflow_run:
     workflows: [unit tests]
-    branches: [master]
+    branches: [main]
     types: [completed]
 
 env:
