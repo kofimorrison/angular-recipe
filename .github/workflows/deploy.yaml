@@ -9,7 +9,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: gke
-  GKE_ZONE: europe-west3-b
+  GKE_ZONE: europe-west9-c
   SHA: ${ GITHUB_SHA:10 }
 
 jobs:
