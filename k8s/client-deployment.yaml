@@ -11,8 +11,8 @@ spec:
   template:
     metadata:
       labels:
-        # component: web
-        # app: angular-recipe
+        component: web
+        app: angular-recipe
     spec:
       containers:
       - name: client
