@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client-deployment
-  namespace: angular-recipe
 spec:
   replicas: 4
   selector:
