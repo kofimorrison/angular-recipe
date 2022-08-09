@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: client-cluster-ip-service
+  name: angular-recipe-service
   namespace: angular-recipe
 spec:
   type: ClusterIP
@@ -10,3 +10,4 @@ spec:
       targetPort: 3000
   selector:
     component: web
+    app: angular-recipe
